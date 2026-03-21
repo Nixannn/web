@@ -1,0 +1,133 @@
+import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+
+*, *::before, *::after {
+  margin: 0; padding: 0; box-sizing: border-box;
+}
+
+:root {
+  --accent: #c084fc;
+  --accent2: #818cf8;
+  --bg-card: rgba(10, 8, 20, 0.72);
+  --text: #f0e6ff;
+  --muted: #9d94b5;
+  --border: rgba(192, 132, 252, 0.18);
+  --glow: rgba(192, 132, 252, 0.35);
+}
+
+html, body {
+  width: 100%; height: 100%;
+  overflow: hidden;
+  font-family: 'Inter', sans-serif;
+  background: #050308;
+  color: var(--text);
+  cursor: default;
+}
+
+/* ── Background Video ── */
+#bg-video {
+  position: fixed;
+  inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  z-index: 0;
+  filter: brightness(0.45) saturate(1.2);
+  transition: filter 0.1s ease;
+}
+
+/* ── Visualizer Canvas ── */
+#visualizer {
+  position: fixed;
+  inset: 0;
+  width: 100%; height: 100%;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.55;
+}
+
+/* ── Overlay ── */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 100%, rgba(129,140,248,0.12) 0%, transparent 70%),
+              linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 60%);
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* ── Glow Orbs ── */
+.glow-orb {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(80px);
+  z-index: 1;
+  pointer-events: none;
+  transition: transform 0.08s ease, opacity 0.08s ease;
+}
+.orb1 { width: 340px; height: 340px; background: rgba(192,132,252,0.18); top: -80px; left: -80px; }
+.orb2 { width: 280px; height: 280px; background: rgba(129,140,248,0.15); bottom: -60px; right: -60px; }
+.orb3 { width: 200px; height: 200px; background: rgba(244,114,182,0.12); top: 50%; left: 50%; transform: translate(-50%,-50%); }
+
+/* ── Main Card ── */
+.container {
+  position: relative;
+  z-index: 10;
+  width: 420px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: var(--bg-card);
+  backdrop-filter: blur(24px) saturate(1.4);
+  -webkit-backdrop-filter: blur(24px) saturate(1.4);
+  border: 1px solid 
+/* ---- VIDEO MODAL ---- */
+#vid-modal {
+  position: fixed; inset: 0; z-index: 200;
+  background: #000;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+#vid-modal.open { display: flex; }
+
+#modal-video {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+}
+.modal-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 50%);
+  z-index: 1; pointer-events: none;
+}
+.modal-close {
+  position: absolute; top: 20px; right: 20px; z-index: 3;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #fff; font-size: 18px;
+  width: 40px; height: 40px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; backdrop-filter: blur(10px);
+  transition: background 0.2s;
+}
+.modal-close:hover { background: rgba(255,255,255,0.2); }
+.modal-info {
+  position: absolute; bottom: 36px; left: 24px; right: 24px; z-index: 2;
+}
+.modal-type {
+  font-size: 9px; font-weight: 700; letter-spacing: 2.5px;
+  text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 6px;
+}
+.modal-title {
+  font-size: 22px; font-weight: 700; color: #fff; letter-spacing: -0.3px;
+}
+
+/* play hint on fav cards */
+.fav-play {
+  position: absolute; top: 12px; right: 12px;
+  width: 28px; height: 28px; border-radius: 50%;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s;
+}
+.fav-item:hover .fav-play { background: rgba(255,255,255,0.18); }
