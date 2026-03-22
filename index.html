@@ -1,626 +1,499 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Nixan</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'Inter', sans-serif;
-      min-height: 100vh;
-      overflow: hidden;
-      background: #000;
-    }
-    #bg-video {
-      position: fixed; inset: 0;
-      width: 100%; height: 100%;
-      object-fit: cover; z-index: 0;
-      filter: grayscale(1) brightness(0.4) contrast(1.2);
-    }
-    .video-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 1; }
-    .orb {
-      position: fixed; border-radius: 50%; filter: blur(90px);
-      animation: float 8s ease-in-out infinite; z-index: 2; pointer-events: none;
-    }
-    .orb-1 { width:350px; height:350px; background:rgba(255,255,255,0.04); top:-80px; left:-80px; }
-    .orb-2 { width:300px; height:300px; background:rgba(255,255,255,0.03); bottom:-60px; right:-60px; animation-delay:-3s; }
-    .orb-3 { width:200px; height:200px; background:rgba(255,255,255,0.025); top:50%; left:50%; animation-delay:-5s; }
-    @keyframes float {
-      0%,100% { transform:translate(0,0) scale(1); }
-      33% { transform:translate(30px,-30px) scale(1.05); }
-      66% { transform:translate(-20px,20px) scale(0.95); }
-    }
-    canvas#particles { position:fixed; inset:0; z-index:3; pointer-events:none; }
-    #play-screen {
-      position: fixed; inset: 0; z-index: 100;
-      background: #000;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      cursor: pointer; gap: 16px;
-    }
-    #play-screen .play-btn {
-      width: 72px; height: 72px; border-radius: 50%;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.2);
-      display: flex; align-items: center; justify-content: center;
-      transition: transform 0.2s, background 0.2s;
-    }
-    #play-screen:hover .play-btn { transform: scale(1.1); background: rgba(255,255,255,0.1); }
-    #play-screen p { color: rgba(255,255,255,0.3); font-size: 13px; letter-spacing: 1px; }
-    #pages {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 68px;
-      z-index: 10;
-      display: flex; align-items: center; justify-content: center;
-    }
-    .page {
-      position: absolute; inset: 0;
-      display: flex; align-items: center; justify-content: center;
-      padding: 20px 20px 8px;
-      overflow-y: auto;
-      opacity: 0; transform: translateY(10px);
-      pointer-events: none;
-      transition: opacity 0.3s ease, transform 0.3s ease;
-    }
-    .page.active { opacity: 1; transform: translateY(0); pointer-events: all; }
-    .card {
-      width: 360px; max-width: 95vw;
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 24px;
-      backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px);
-      box-shadow: 0 8px 48px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.06);
-    }
-    .divider { height:1px; background:linear-gradient(90deg,transparent,rgba(255,255,255,0.07),transparent); }
-    #page-home .card { padding: 36px 28px 28px; text-align: center; }
-    .avatar-wrap { position:relative; display:inline-block; margin-bottom:16px; }
-    .avatar {
-      width:88px; height:88px; border-radius:50%;
-      border:1px solid rgba(255,255,255,0.2);
-      object-fit:cover; display:block; filter:grayscale(1);
-      box-shadow:0 0 0 4px rgba(255,255,255,0.04), 0 0 24px rgba(255,255,255,0.08);
-    }
-    .avatar-ring {
-      position:absolute; inset:-6px; border-radius:50%;
-      border:1px solid transparent;
-      background:linear-gradient(135deg,#fff,#666,#fff) border-box;
-      -webkit-mask:linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
-      -webkit-mask-composite:destination-out; mask-composite:exclude;
-      animation:spin 6s linear infinite; opacity:0.4;
-    }
-    @keyframes spin { to { transform:rotate(360deg); } }
-    .username { font-size:22px; font-weight:700; color:#fff; letter-spacing:-0.3px; margin-bottom:14px; }
-    .bio { font-size:13px; color:rgba(255,255,255,0.35); line-height:1.6; margin-bottom:20px; letter-spacing:0.5px; }
-    .links { display:flex; flex-direction:column; gap:10px; margin-top:18px; }
-    .link-btn {
-      display:flex; align-items:center; gap:12px; padding:12px 16px;
-      border-radius:12px; background:rgba(255,255,255,0.03);
-      border:1px solid rgba(255,255,255,0.07);
-      text-decoration:none; color:rgba(255,255,255,0.7);
-      font-size:13px; font-weight:500;
-      transition:all 0.2s ease; position:relative; overflow:hidden;
-    }
-    .link-btn::before { content:''; position:absolute; inset:0; opacity:0; transition:opacity 0.2s; border-radius:inherit; background:rgba(255,255,255,0.04); }
-    .link-btn:hover { transform:translateY(-2px); border-color:rgba(255,255,255,0.15); color:#fff; box-shadow:0 4px 20px rgba(255,255,255,0.06); }
-    .link-btn:hover::before { opacity:1; }
-    .link-icon { width:32px; height:32px; border-radius:8px; display:flex; align-items:center; justify-content:center; flex-shrink:0; background:rgba(255,255,255,0.06); }
-    .link-text { flex:1; text-align:left; }
-    .link-arrow { font-size:14px; color:rgba(255,255,255,0.2); transition:transform 0.2s, color 0.2s; }
-    .link-btn:hover .link-arrow { transform:translateX(3px); color:rgba(255,255,255,0.5); }
-    .card-footer {
-      margin-top:20px;
-      display:flex; align-items:center; justify-content:center; gap:14px;
-      font-size:11px; color:rgba(255,255,255,0.18); letter-spacing:0.5px;
-    }
-    .card-footer span { display:flex; align-items:center; gap:4px; }
-    .about-header { display:flex; align-items:center; gap:14px; margin-bottom:24px; }
-    .about-avatar {
-      width:52px; height:52px; border-radius:50%;
-      border:1px solid rgba(255,255,255,0.15);
-      object-fit:cover; flex-shrink:0; filter:grayscale(1);
-    }
-    .about-name { font-size:17px; font-weight:700; color:#fff; margin-bottom:2px; }
-    .about-location { font-size:11px; color:rgba(255,255,255,0.3); letter-spacing:0.5px; }
-    .about-label {
-      font-size:9px; font-weight:700; color:rgba(255,255,255,0.25);
-      letter-spacing:2px; text-transform:uppercase; margin-bottom:10px;
-    }
-    .currently-list { display:flex; flex-direction:column; gap:10px; }
-    .currently-item { display:flex; align-items:center; gap:10px; font-size:12px; color:rgba(255,255,255,0.55); }
-    .ci-icon { font-size:14px; }
-    .ci-label { color:rgba(255,255,255,0.2); font-size:10px; margin-right:4px; text-transform:uppercase; letter-spacing:0.5px; }
-    .about-quote {
-      font-size:13px; color:rgba(255,255,255,0.28);
-      font-style:italic; letter-spacing:0.3px; line-height:1.7;
-      border-left:2px solid rgba(255,255,255,0.1); padding-left:12px;
-      margin-top:22px;
-    }
-    .section-label {
-      font-size:9px; font-weight:700;
-      color:rgba(255,255,255,0.2);
-      letter-spacing:2.5px; text-transform:uppercase;
-      display:block; margin-bottom:16px;
-    }
-    .fav-item {
-      display:flex; align-items:center; gap:16px;
-      padding:14px; border-radius:14px;
-      background:rgba(255,255,255,0.025);
-      border:1px solid rgba(255,255,255,0.07);
-      margin-bottom:10px;
-      transition:all 0.25s ease;
-      position:relative; overflow:hidden; cursor:pointer;
-    }
-    .fav-item:last-child { margin-bottom:0; }
-    .fav-item:hover {
-      background:rgba(255,255,255,0.05);
-      border-color:rgba(255,255,255,0.14);
-      transform:translateY(-2px);
-      box-shadow:0 6px 24px rgba(0,0,0,0.4);
-    }
-    .fav-poster {
-      width:56px; height:80px; border-radius:8px;
-      object-fit:cover; flex-shrink:0;
-      filter:grayscale(1) brightness(0.85);
-      border:1px solid rgba(255,255,255,0.08);
-      background:rgba(255,255,255,0.04);
-      transition:filter 0.3s ease; display:block;
-    }
-    .fav-item:hover .fav-poster { filter:grayscale(0.3) brightness(0.95); }
-    .fav-poster-placeholder {
-      width:56px; height:80px; border-radius:8px; flex-shrink:0;
-      background:rgba(255,255,255,0.04);
-      border:1px dashed rgba(255,255,255,0.1);
-      display:flex; align-items:center; justify-content:center; font-size:20px;
-    }
-    .fav-info { flex:1; min-width:0; }
-    .fav-type {
-      font-size:8px; font-weight:700;
-      letter-spacing:2.5px; text-transform:uppercase;
-      color:rgba(255,255,255,0.2); margin-bottom:5px;
-    }
-    .fav-title {
-      font-size:14px; font-weight:700; color:rgba(255,255,255,0.88);
-      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-      margin-bottom:4px; letter-spacing:-0.2px;
-    }
-    .fav-sub {
-      font-size:11px; color:rgba(255,255,255,0.3);
-      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-    }
-    .fav-right { display:flex; flex-direction:column; align-items:flex-end; gap:8px; flex-shrink:0; }
-    .fav-stars { font-size:10px; color:rgba(255,255,255,0.7); letter-spacing:1px; }
-    .fav-play {
-      width:28px; height:28px; border-radius:50%;
-      background:rgba(255,255,255,0.08);
-      border:1px solid rgba(255,255,255,0.15);
-      display:flex; align-items:center; justify-content:center;
-      transition:background 0.2s;
-    }
-    .fav-item:hover .fav-play { background:rgba(255,255,255,0.2); }
-    #vid-modal {
-      position: fixed; inset: 0; z-index: 200;
-      background: #000; display: none;
-      flex-direction: column; align-items: center; justify-content: center;
-    }
-    #vid-modal.open { display: flex; }
-    #modal-video {
-      position: absolute; inset: 0;
-      width: 100%; height: 100%; object-fit: cover;
-    }
-    .modal-overlay {
-      position: absolute; inset: 0;
-      background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 50%);
-      z-index: 1; pointer-events: none;
-    }
-    .modal-close {
-      position: absolute; top: 20px; right: 20px; z-index: 3;
-      background: rgba(255,255,255,0.1);
-      border: 1px solid rgba(255,255,255,0.2);
-      color: #fff; font-size: 18px;
-      width: 40px; height: 40px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer; backdrop-filter: blur(10px);
-      transition: background 0.2s; font-family: 'Inter', sans-serif;
-    }
-    .modal-close:hover { background: rgba(255,255,255,0.2); }
-    .modal-info { position: absolute; bottom: 36px; left: 24px; right: 24px; z-index: 2; }
-    .modal-type {
-      font-size:9px; font-weight:700; letter-spacing:2.5px;
-      text-transform:uppercase; color:rgba(255,255,255,0.4); margin-bottom:6px;
-    }
-    .modal-title { font-size:22px; font-weight:700; color:#fff; letter-spacing:-0.3px; }
-
-    .photos-grid {
-      display: flex; flex-direction: column; gap: 12px;
-    }
-    .photo-item {
-      position: relative; border-radius: 16px; overflow: hidden;
-      cursor: pointer; border: 1px solid rgba(255,255,255,0.07);
-      transition: all 0.25s ease;
-    }
-    .photo-item:hover { transform: translateY(-2px); border-color: rgba(255,255,255,0.18); box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
-    .photo-item img {
-      width: 100%; height: 180px; object-fit: cover; display: block;
-      filter: grayscale(0.3) brightness(0.8);
-      transition: filter 0.3s ease, transform 0.3s ease;
-    }
-    .photo-item:hover img { filter: grayscale(0) brightness(0.95); transform: scale(1.02); }
-    .photo-item.playing img { filter: grayscale(0) brightness(1); }
-    .photo-caption {
-      position: absolute; bottom: 0; left: 0; right: 0;
-      padding: 20px 14px 12px;
-      background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 100%);
-      display: flex; align-items: flex-end; justify-content: space-between;
-    }
-    .photo-caption-text { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.85); letter-spacing: -0.2px; }
-    .photo-music-icon {
-      width: 28px; height: 28px; border-radius: 50%;
-      background: rgba(255,255,255,0.1);
-      border: 1px solid rgba(255,255,255,0.2);
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0; transition: background 0.2s;
-    }
-    .photo-item.playing .photo-music-icon { background: rgba(255,255,255,0.25); }
-    .music-bar {
-      display: flex; align-items: flex-end; gap: 2px; height: 12px;
-    }
-    .music-bar span {
-      display: block; width: 3px; background: #fff; border-radius: 2px;
-      animation: none; opacity: 0.6;
-    }
-    .photo-item.playing .music-bar span { animation: bar 0.8s ease-in-out infinite alternate; }
-    .music-bar span:nth-child(1) { height: 6px; animation-delay: 0s; }
-    .music-bar span:nth-child(2) { height: 10px; animation-delay: 0.2s; }
-    .music-bar span:nth-child(3) { height: 7px; animation-delay: 0.4s; }
-    @keyframes bar {
-      from { height: 4px; opacity: 0.4; }
-      to { height: 12px; opacity: 1; }
-    }
-
-    #tabbar {
-      position: fixed; bottom: 0; left: 0; right: 0;
-      height: 68px; z-index: 20;
-      background: rgba(0,0,0,0.8);
-      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-      border-top: 1px solid rgba(255,255,255,0.07);
-      display: flex; align-items: center; justify-content: center;
-      padding-bottom: 6px;
-    }
-    .tab {
-      flex:1; max-width:90px;
-      display:flex; flex-direction:column; align-items:center; justify-content:center;
-      gap:4px; background:none; border:none; cursor:pointer;
-      padding:8px 0; color:rgba(255,255,255,0.2);
-      transition:color 0.25s; font-family:'Inter',sans-serif; position:relative;
-    }
-    .tab::after {
-      content:''; position:absolute; top:0; left:50%; transform:translateX(-50%);
-      width:0; height:2px; border-radius:0 0 3px 3px;
-      background:rgba(255,255,255,0.7); transition:width 0.3s ease;
-    }
-    .tab.active { color:rgba(255,255,255,0.85); }
-    .tab.active::after { width:28px; }
-    .tab svg { width:20px; height:20px; }
-    .tab span { font-size:9px; font-weight:600; letter-spacing:1px; text-transform:uppercase; }
-  </style>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Nixan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+font-family: 'Inter', sans-serif;
+min-height: 100vh;
+overflow: hidden;
+background: #000;
+}
+#bg-video {
+position: fixed; inset: 0;
+width: 100%; height: 100%;
+object-fit: cover; z-index: 0;
+filter: grayscale(1) brightness(0.4) contrast(1.2);
+}
+.video-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 1; }
+.orb {
+position: fixed; border-radius: 50%; filter: blur(90px);
+animation: float 8s ease-in-out infinite; z-index: 2; pointer-events: none;
+}
+.orb-1 { width:350px; height:350px; background:rgba(255,255,255,0.04); top:-80px; left:-80px; }
+.orb-2 { width:300px; height:300px; background:rgba(255,255,255,0.03); bottom:-60px; right:-60px; animation-delay:-3s; }
+.orb-3 { width:200px; height:200px; background:rgba(255,255,255,0.025); top:50%; left:50%; animation-delay:-5s; }
+@keyframes float {
+0%,100% { transform:translate(0,0) scale(1); }
+33% { transform:translate(30px,-30px) scale(1.05); }
+66% { transform:translate(-20px,20px) scale(0.95); }
+}
+canvas#particles { position:fixed; inset:0; z-index:3; pointer-events:none; }
+#play-screen {
+position: fixed; inset: 0; z-index: 100;
+background: #000;
+display: flex; flex-direction: column;
+align-items: center; justify-content: center;
+cursor: pointer; gap: 16px;
+}
+#play-screen .play-btn {
+width: 72px; height: 72px; border-radius: 50%;
+background: rgba(255,255,255,0.05);
+border: 1px solid rgba(255,255,255,0.2);
+display: flex; align-items: center; justify-content: center;
+transition: transform 0.2s, background 0.2s;
+}
+#play-screen:hover .play-btn { transform: scale(1.1); background: rgba(255,255,255,0.1); }
+#play-screen p { color: rgba(255,255,255,0.3); font-size: 13px; letter-spacing: 1px; }
+#pages {
+position: fixed;
+top: 0; left: 0; right: 0; bottom: 68px;
+z-index: 10;
+display: flex; align-items: center; justify-content: center;
+}
+.page {
+position: absolute; inset: 0;
+display: flex; align-items: center; justify-content: center;
+padding: 20px 20px 8px;
+overflow-y: auto;
+opacity: 0; transform: translateY(10px);
+pointer-events: none;
+transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.page.active { opacity: 1; transform: translateY(0); pointer-events: all; }
+.card {
+width: 360px; max-width: 95vw;
+background: rgba(255,255,255,0.03);
+border: 1px solid rgba(255,255,255,0.08);
+border-radius: 24px;
+backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px);
+box-shadow: 0 8px 48px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.06);
+}
+.divider { height:1px; background:linear-gradient(90deg,transparent,rgba(255,255,255,0.07),transparent); }
+#page-home .card { padding: 36px 28px 28px; text-align: center; }
+.avatar-wrap { position:relative; display:inline-block; margin-bottom:16px; }
+.avatar {
+width:88px; height:88px; border-radius:50%;
+border:1px solid rgba(255,255,255,0.2);
+object-fit:cover; display:block; filter:grayscale(1);
+box-shadow:0 0 0 4px rgba(255,255,255,0.04), 0 0 24px rgba(255,255,255,0.08);
+}
+.avatar-ring {
+position:absolute; inset:-6px; border-radius:50%;
+border:1px solid transparent;
+background:linear-gradient(135deg,#fff,#666,#fff) border-box;
+-webkit-mask:linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+-webkit-mask-composite:destination-out; mask-composite:exclude;
+animation:spin 6s linear infinite; opacity:0.4;
+}
+@keyframes spin { to { transform:rotate(360deg); } }
+.username { font-size:22px; font-weight:700; color:#fff; letter-spacing:-0.3px; margin-bottom:14px; }
+.bio { font-size:13px; color:rgba(255,255,255,0.35); line-height:1.6; margin-bottom:20px; letter-spacing:0.5px; }
+.links { display:flex; flex-direction:column; gap:10px; margin-top:18px; }
+.link-btn {
+display:flex; align-items:center; gap:12px; padding:12px 16px;
+border-radius:12px; background:rgba(255,255,255,0.03);
+border:1px solid rgba(255,255,255,0.07);
+text-decoration:none; color:rgba(255,255,255,0.7);
+font-size:13px; font-weight:500;
+transition:all 0.2s ease; position:relative; overflow:hidden;
+}
+.link-btn::before { content:''; position:absolute; inset:0; opacity:0; transition:opacity 0.2s; border-radius:inherit; background:rgba(255,255,255,0.04); }
+.link-btn:hover { transform:translateY(-2px); border-color:rgba(255,255,255,0.15); color:#fff; box-shadow:0 4px 20px rgba(255,255,255,0.06); }
+.link-btn:hover::before { opacity:1; }
+.link-icon { width:32px; height:32px; border-radius:8px; display:flex; align-items:center; justify-content:center; flex-shrink:0; background:rgba(255,255,255,0.06); }
+.link-text { flex:1; text-align:left; }
+.link-arrow { font-size:14px; color:rgba(255,255,255,0.2); transition:transform 0.2s, color 0.2s; }
+.link-btn:hover .link-arrow { transform:translateX(3px); color:rgba(255,255,255,0.5); }
+.card-footer {
+margin-top:20px;
+display:flex; align-items:center; justify-content:center; gap:14px;
+font-size:11px; color:rgba(255,255,255,0.18); letter-spacing:0.5px;
+}
+.card-footer span { display:flex; align-items:center; gap:4px; }
+.about-header { display:flex; align-items:center; gap:14px; margin-bottom:24px; }
+.about-avatar {
+width:52px; height:52px; border-radius:50%;
+border:1px solid rgba(255,255,255,0.15);
+object-fit:cover; flex-shrink:0; filter:grayscale(1);
+}
+.about-name { font-size:17px; font-weight:700; color:#fff; margin-bottom:2px; }
+.about-location { font-size:11px; color:rgba(255,255,255,0.3); letter-spacing:0.5px; }
+.about-label {
+font-size:9px; font-weight:700; color:rgba(255,255,255,0.25);
+letter-spacing:2px; text-transform:uppercase; margin-bottom:10px;
+}
+.currently-list { display:flex; flex-direction:column; gap:10px; }
+.currently-item { display:flex; align-items:center; gap:10px; font-size:12px; color:rgba(255,255,255,0.55); }
+.ci-icon { font-size:14px; }
+.ci-label { color:rgba(255,255,255,0.2); font-size:10px; margin-right:4px; text-transform:uppercase; letter-spacing:0.5px; }
+.about-quote {
+font-size:13px; color:rgba(255,255,255,0.28);
+font-style:italic; letter-spacing:0.3px; line-height:1.7;
+border-left:2px solid rgba(255,255,255,0.1); padding-left:12px;
+margin-top:22px;
+}
+.section-label {
+font-size:9px; font-weight:700;
+color:rgba(255,255,255,0.2);
+letter-spacing:2.5px; text-transform:uppercase;
+display:block; margin-bottom:16px;
+}
+.fav-item {
+display:flex; align-items:center; gap:16px;
+padding:14px; border-radius:14px;
+background:rgba(255,255,255,0.025);
+border:1px solid rgba(255,255,255,0.07);
+margin-bottom:10px;
+transition:all 0.25s ease;
+position:relative; overflow:hidden; cursor:pointer;
+}
+.fav-item:last-child { margin-bottom:0; }
+.fav-item:hover {
+background:rgba(255,255,255,0.05);
+border-color:rgba(255,255,255,0.14);
+transform:translateY(-2px);
+box-shadow:0 6px 24px rgba(0,0,0,0.4);
+}
+.fav-poster {
+width:56px; height:80px; border-radius:8px;
+object-fit:cover; flex-shrink:0;
+filter:grayscale(1) brightness(0.85);
+border:1px solid rgba(255,255,255,0.08);
+background:rgba(255,255,255,0.04);
+transition:filter 0.3s ease; display:block;
+}
+.fav-item:hover .fav-poster { filter:grayscale(0.3) brightness(0.95); }
+.fav-poster-placeholder {
+width:56px; height:80px; border-radius:8px; flex-shrink:0;
+background:rgba(255,255,255,0.04);
+border:1px dashed rgba(255,255,255,0.1);
+display:flex; align-items:center; justify-content:center; font-size:20px;
+}
+.fav-info { flex:1; min-width:0; }
+.fav-type {
+font-size:8px; font-weight:700;
+letter-spacing:2.5px; text-transform:uppercase;
+color:rgba(255,255,255,0.2); margin-bottom:5px;
+}
+.fav-title {
+font-size:14px; font-weight:700; color:rgba(255,255,255,0.88);
+white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+margin-bottom:4px; letter-spacing:-0.2px;
+}
+.fav-sub {
+font-size:11px; color:rgba(255,255,255,0.3);
+white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.fav-right { display:flex; flex-direction:column; align-items:flex-end; gap:8px; flex-shrink:0; }
+.fav-stars { font-size:10px; color:rgba(255,255,255,0.7); letter-spacing:1px; }
+.fav-play {
+width:28px; height:28px; border-radius:50%;
+background:rgba(255,255,255,0.08);
+border:1px solid rgba(255,255,255,0.15);
+display:flex; align-items:center; justify-content:center;
+transition:background 0.2s;
+}
+.fav-item:hover .fav-play { background:rgba(255,255,255,0.2); }
+#vid-modal {
+position: fixed; inset: 0; z-index: 200;
+background: #000; display: none;
+flex-direction: column; align-items: center; justify-content: center;
+}
+#vid-modal.open { display: flex; }
+#modal-video {
+position: absolute; inset: 0;
+width: 100%; height: 100%; object-fit: cover;
+}
+.modal-overlay {
+position: absolute; inset: 0;
+background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 50%);
+z-index: 1; pointer-events: none;
+}
+.modal-close {
+position: absolute; top: 20px; right: 20px; z-index: 3;
+background: rgba(255,255,255,0.1);
+border: 1px solid rgba(255,255,255,0.2);
+color: #fff; font-size: 18px;
+width: 40px; height: 40px; border-radius: 50%;
+display: flex; align-items: center; justify-content: center;
+cursor: pointer; backdrop-filter: blur(10px);
+transition: background 0.2s; font-family: 'Inter', sans-serif;
+}
+.modal-close:hover { background: rgba(255,255,255,0.2); }
+.modal-info { position: absolute; bottom: 36px; left: 24px; right: 24px; z-index: 2; }
+.modal-type {
+font-size:9px; font-weight:700; letter-spacing:2.5px;
+text-transform:uppercase; color:rgba(255,255,255,0.4); margin-bottom:6px;
+}
+.modal-title { font-size:22px; font-weight:700; color:#fff; letter-spacing:-0.3px; }
+#tabbar {
+position: fixed; bottom: 0; left: 0; right: 0;
+height: 68px; z-index: 20;
+background: rgba(0,0,0,0.8);
+backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+border-top: 1px solid rgba(255,255,255,0.07);
+display: flex; align-items: center; justify-content: center;
+padding-bottom: 6px;
+}
+.tab {
+flex:1; max-width:110px;
+display:flex; flex-direction:column; align-items:center; justify-content:center;
+gap:4px; background:none; border:none; cursor:pointer;
+padding:8px 0; color:rgba(255,255,255,0.2);
+transition:color 0.25s; font-family:'Inter',sans-serif; position:relative;
+}
+.tab::after {
+content:''; position:absolute; top:0; left:50%; transform:translateX(-50%);
+width:0; height:2px; border-radius:0 0 3px 3px;
+background:rgba(255,255,255,0.7); transition:width 0.3s ease;
+}
+.tab.active { color:rgba(255,255,255,0.85); }
+.tab.active::after { width:28px; }
+.tab svg { width:20px; height:20px; }
+.tab span { font-size:9px; font-weight:600; letter-spacing:1px; text-transform:uppercase; }
+</style>
 </head>
 <body>
-  <div id="play-screen" onclick="startVideo()">
-    <div class="play-btn">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
-    </div>
-    <p>click to enter</p>
-  </div>
+<div id="play-screen" onclick="startVideo()">
+<div class="play-btn">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
+</div>
+<p>click to enter</p>
+</div>
 
-  <video id="bg-video" loop playsinline>
-    <source src="kaneki.mp4" type="video/mp4">
-  </video>
-  <div class="video-overlay"></div>
-  <div class="orb orb-1"></div>
-  <div class="orb orb-2"></div>
-  <div class="orb orb-3"></div>
-  <canvas id="particles"></canvas>
+<video id="bg-video" loop playsinline>
+<source src="kaneki.mp4" type="video/mp4">
+</video>
+<div class="video-overlay"></div>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+<canvas id="particles"></canvas>
 
-  <div id="pages">
-    <div class="page active" id="page-home">
-      <div class="card" id="card">
-        <div class="avatar-wrap">
-          <img class="avatar" src="avatar.png" alt="avatar"/>
-          <div class="avatar-ring"></div>
-        </div>
-        <div class="username">Nixan</div>
-        <p class="bio">11.04 &lt;3</p>
-        <div class="divider"></div>
-        <div class="links">
-          <a href="https://www.roblox.com/users/84376389/profile" class="link-btn">
-            <div class="link-icon">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="rgba(255,255,255,0.7)"><path d="M4.597 2L2 18.799 19.403 22 22 5.201zm9.534 10.189l-3.131-.601.601-3.131 3.131.601z"/></svg>
-            </div>
-            <div class="link-text"><span>Roblox</span></div>
-            <span class="link-arrow">›</span>
-          </a>
-          <a href="https://steamcommunity.com/profiles/76561198271543323/" class="link-btn">
-            <div class="link-icon">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="rgba(255,255,255,0.7)"><path d="M11.979 0C5.678 0 .511 4.86.022 11.037l6.432 2.658c.545-.371 1.203-.59 1.912-.59.063 0 .125.004.188.006l2.861-4.142V8.91c0-2.495 2.028-4.524 4.524-4.524 2.494 0 4.524 2.031 4.524 4.527s-2.03 4.525-4.524 4.525h-.105l-4.076 2.911c0 .052.004.105.004.159 0 1.875-1.515 3.396-3.39 3.396-1.635 0-3.016-1.173-3.331-2.727L.436 15.27C1.862 20.307 6.486 24 11.979 24c6.627 0 11.999-5.373 11.999-12S18.605 0 11.979 0zM7.54 18.21l-1.473-.61c.262.543.714.999 1.314 1.25 1.297.539 2.793-.076 3.332-1.375.263-.63.264-1.319.005-1.949s-.75-1.121-1.377-1.383c-.624-.26-1.29-.249-1.878-.03l1.523.63c.956.4 1.409 1.497 1.009 2.455-.397.957-1.494 1.41-2.454 1.012H7.54zm11.415-9.303c0-1.662-1.353-3.015-3.015-3.015-1.665 0-3.015 1.353-3.015 3.015 0 1.665 1.35 3.015 3.015 3.015 1.663 0 3.015-1.35 3.015-3.015zm-5.273.005c0-1.252 1.013-2.266 2.265-2.266 1.249 0 2.266 1.014 2.266 2.266 0 1.251-1.017 2.265-2.266 2.265-1.253 0-2.265-1.014-2.265-2.265z"/></svg>
-            </div>
-            <div class="link-text"><span>Steam</span></div>
-            <span class="link-arrow">›</span>
-          </a>
-        </div>
-        <div class="card-footer">
-          <span>📍 Dublin, IE</span>
-          <span>·</span>
-          <span id="dublin-time">🕐 --:--</span>
-        </div>
-      </div>
-    </div>
+<div id="pages">
+<div class="page active" id="page-home">
+<div class="card" id="card">
+<div class="avatar-wrap">
+<img class="avatar" src="avatar.png" alt="avatar"/>
+<div class="avatar-ring"></div>
+</div>
+<div class="username">Nixan</div>
+<p class="bio">11.04 &lt;3</p>
+<div class="divider"></div>
+<div class="links">
 
-    <div class="page" id="page-about">
-      <div class="card" style="padding:32px 28px; text-align:left;">
-        <div class="about-header">
-          <img class="about-avatar" src="avatar.png" alt="avatar"/>
-          <div>
-            <div class="about-name">Nixan</div>
-            <div class="about-location">📍 Dublin, Ireland</div>
-          </div>
-        </div>
-        <div class="divider"></div>
-        <div style="margin-top:22px;">
-          <div class="about-label">Currently</div>
-          <div class="currently-list">
-            <div class="currently-item">
-              <span class="ci-icon">📺</span>
-              <span><span class="ci-label">watching</span>Jujutsu Kaisen</span>
-            </div>
-            <div class="currently-item">
-              <span class="ci-icon">📖</span>
-              <span><span class="ci-label">reading</span>One Piece</span>
-            </div>
-            <div class="currently-item">
-              <span class="ci-icon">🎮</span>
-              <span><span class="ci-label">playing</span>GTA IV</span>
-            </div>
-          </div>
-        </div>
-        <p class="about-quote">11.04 &lt;3</p>
-      </div>
-    </div>
+<a href="https://www.roblox.com/users/84376389/profile" class="link-btn">
+<div class="link-icon">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="rgba(255,255,255,0.7)"><path d="M4.597 2L2 18.799 19.403 22 22 5.201zm9.534 10.189l-3.131-.601.601-3.131 3.131.601z"/></svg>
+</div>
+<div class="link-text"><span>Roblox</span></div>
+<span class="link-arrow">›</span>
+</a>
+<a href="https://steamcommunity.com/profiles/76561198271543323/" class="link-btn">
+<div class="link-icon">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="rgba(255,255,255,0.7)"><path d="M11.979 0C5.678 0 .511 4.86.022 11.037l6.432 2.658c.545-.371 1.203-.59 1.912-.59.063 0 .125.004.188.006l2.861-4.142V8.91c0-2.495 2.028-4.524 4.524-4.524 2.494 0 4.524 2.031 4.524 4.527s-2.03 4.525-4.524 4.525h-.105l-4.076 2.911c0 .052.004.105.004.159 0 1.875-1.515 3.396-3.39 3.396-1.635 0-3.016-1.173-3.331-2.727L.436 15.27C1.862 20.307 6.486 24 11.979 24c6.627 0 11.999-5.373 11.999-12S18.605 0 11.979 0zM7.54 18.21l-1.473-.61c.262.543.714.999 1.314 1.25 1.297.539 2.793-.076 3.332-1.375.263-.63.264-1.319.005-1.949s-.75-1.121-1.377-1.383c-.624-.26-1.29-.249-1.878-.03l1.523.63c.956.4 1.409 1.497 1.009 2.455-.397.957-1.494 1.41-2.454 1.012H7.54zm11.415-9.303c0-1.662-1.353-3.015-3.015-3.015-1.665 0-3.015 1.353-3.015 3.015 0 1.665 1.35 3.015 3.015 3.015 1.663 0 3.015-1.35 3.015-3.015zm-5.273.005c0-1.252 1.013-2.266 2.265-2.266 1.249 0 2.266 1.014 2.266 2.266 0 1.251-1.017 2.265-2.266 2.265-1.253 0-2.265-1.014-2.265-2.265z"/></svg>
+</div>
+<div class="link-text"><span>Steam</span></div>
+<span class="link-arrow">›</span>
+</a>
+</div>
+<div class="card-footer">
+<span>📍 Dublin, IE</span>
+<span>·</span>
+<span id="dublin-time">🕐 --:--</span>
+</div>
+</div>
+</div>
 
-    <div class="page" id="page-favs">
-      <div class="card" style="padding:28px 22px;">
-        <span class="section-label">Favourites</span>
-        <div class="fav-item" onclick="openModal('movie-edit.mp4','Film','A Bronx Tale')">
-          <img class="fav-poster" src="movie.jpg" alt="movie"
-            onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"/>
-          <div class="fav-poster-placeholder" style="display:none;">🎬</div>
-          <div class="fav-info">
-            <div class="fav-type">Film</div>
-            <div class="fav-title">A Bronx Tale</div>
-            <div class="fav-sub">1993 · Crime Drama</div>
-          </div>
-          <div class="fav-right">
-            <span class="fav-stars">★★★★★</span>
-            <div class="fav-play">
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
-            </div>
-          </div>
-        </div>
-        <div class="fav-item" onclick="openModal('game-edit.mp4','Game','Mafia: Definitive Edition')">
-          <img class="fav-poster" src="game.jpg" alt="game"
-            onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"/>
-          <div class="fav-poster-placeholder" style="display:none;">🎮</div>
-          <div class="fav-info">
-            <div class="fav-type">Game</div>
-            <div class="fav-title">Mafia: Definitive Edition</div>
-            <div class="fav-sub">PC / Console · Action</div>
-          </div>
-          <div class="fav-right">
-            <span class="fav-stars">★★★★★</span>
-            <div class="fav-play">
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
-            </div>
-          </div>
-        </div>
-        <div class="fav-item" onclick="openModal('show-edit.mp4','Show','The Walking Dead')">
-          <img class="fav-poster" src="show.jpg" alt="show"
-            onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"/>
-          <div class="fav-poster-placeholder" style="display:none;">📺</div>
-          <div class="fav-info">
-            <div class="fav-type">Show</div>
-            <div class="fav-title">The Walking Dead</div>
-            <div class="fav-sub">2010 · Horror Drama</div>
-          </div>
-          <div class="fav-right">
-            <span class="fav-stars">★★★★★</span>
-            <div class="fav-play">
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+<div class="page" id="page-about">
+<div class="card" style="padding:32px 28px; text-align:left;">
+<div class="about-header">
+<img class="about-avatar" src="avatar.png" alt="avatar"/>
+<div>
+<div class="about-name">Nixan</div>
+<div class="about-location">📍 Dublin, Ireland</div>
+</div>
+</div>
+<div class="divider"></div>
+<div style="margin-top:22px;">
+<div class="about-label">Currently</div>
+<div class="currently-list">
+<div class="currently-item">
+<span class="ci-icon">📺</span>
+<span><span class="ci-label">watching</span>Jujutsu Kaisen</span>
+</div>
+<div class="currently-item">
+<span class="ci-icon">📖</span>
+<span><span class="ci-label">reading</span>One Piece</span>
+</div>
+<div class="currently-item">
+<span class="ci-icon">🎮</span>
+<span><span class="ci-label">playing</span>GTA IV</span>
+</div>
+</div>
+</div>
+<p class="about-quote">11.04 &lt;3</p>
+</div>
+</div>
 
-    <div class="page" id="page-photos">
-      <div class="card" style="padding:28px 22px; align-self:flex-start; margin-top:auto; margin-bottom:auto;">
-        <span class="section-label">Photos</span>
-        <div class="photos-grid">
+<div class="page" id="page-favs">
+<div class="card" style="padding:28px 22px;">
+<span class="section-label">Favourites</span>
+<div class="fav-item" onclick="openModal('movie-edit.mp4','Film','A Bronx Tale')">
+<img class="fav-poster" src="movie.jpg" alt="movie"
+onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"/>
+<div class="fav-poster-placeholder" style="display:none;">🎬</div>
+<div class="fav-info">
+<div class="fav-type">Film</div>
+<div class="fav-title">A Bronx Tale</div>
+<div class="fav-sub">1993 · Crime Drama</div>
+</div>
+<div class="fav-right">
+<span class="fav-stars">★★★★★</span>
+<div class="fav-play">
+<svg width="10" height="10" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
+</div>
+</div>
+</div>
+<div class="fav-item" onclick="openModal('game-edit.mp4','Game','Mafia: Definitive Edition')">
+<img class="fav-poster" src="game.jpg" alt="game"
+onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"/>
+<div class="fav-poster-placeholder" style="display:none;">🎮</div>
+<div class="fav-info">
+<div class="fav-type">Game</div>
+<div class="fav-title">Mafia: Definitive Edition</div>
+<div class="fav-sub">PC / Console · Action</div>
+</div>
+<div class="fav-right">
+<span class="fav-stars">★★★★★</span>
+<div class="fav-play">
+<svg width="10" height="10" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
+</div>
+</div>
+</div>
+<div class="fav-item" onclick="openModal('show-edit.mp4','Show','The Walking Dead')">
+<img class="fav-poster" src="show.jpg" alt="show"
+onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"/>
+<div class="fav-poster-placeholder" style="display:none;">📺</div>
+<div class="fav-info">
+<div class="fav-type">Show</div>
+<div class="fav-title">The Walking Dead</div>
+<div class="fav-sub">2010 · Horror Drama</div>
+</div>
+<div class="fav-right">
+<span class="fav-stars">★★★★★</span>
+<div class="fav-play">
+<svg width="10" height="10" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
 
-          <div class="photo-item" id="photo-0" onclick="playPhoto(0,'song1.mp3','Photo One')">
-            <img src="photo1.jpg" alt="photo 1"/>
-            <div class="photo-caption">
-              <span class="photo-caption-text">Photo One</span>
-              <div class="photo-music-icon">
-                <div class="music-bar">
-                  <span></span><span></span><span></span>
-                </div>
-              </div>
-            </div>
-          </div>
+<div id="vid-modal">
+<video id="modal-video" playsinline loop></video>
+<div class="modal-overlay"></div>
+<button class="modal-close" onclick="closeModal()">✕</button>
+<div class="modal-info">
+<div class="modal-type" id="modal-type"></div>
+<div class="modal-title" id="modal-title"></div>
+</div>
+</div>
 
-          <div class="photo-item" id="photo-1" onclick="playPhoto(1,'song2.mp3','Photo Two')">
-            <img src="photo2.jpg" alt="photo 2"/>
-            <div class="photo-caption">
-              <span class="photo-caption-text">Photo Two</span>
-              <div class="photo-music-icon">
-                <div class="music-bar">
-                  <span></span><span></span><span></span>
-                </div>
-              </div>
-            </div>
-          </div>
+<nav id="tabbar">
+<button class="tab active" onclick="switchPage('home',this)">
+<svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+<span>Home</span>
+</button>
+<button class="tab" onclick="switchPage('about',this)">
+<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+<span>About</span>
+</button>
+<button class="tab" onclick="switchPage('favs',this)">
+<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+<span>Favs</span>
+</button>
+</nav>
 
-          <div class="photo-item" id="photo-2" onclick="playPhoto(2,'song3.mp3','Photo Three')">
-            <img src="photo3.jpg" alt="photo 3"/>
-            <div class="photo-caption">
-              <span class="photo-caption-text">Photo Three</span>
-              <div class="photo-music-icon">
-                <div class="music-bar">
-                  <span></span><span></span><span></span>
-                </div>
-              </div>
-            </div>
-          </div>
+<script>
+function switchPage(id, btn) {
+document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+document.getElementById('page-' + id).classList.add('active');
+btn.classList.add('active');
+}
 
-        </div>
-      </div>
-    </div>
-  </div>
+function updateTime() {
+const time = new Date().toLocaleTimeString('en-IE', {
+timeZone: 'Europe/Dublin', hour: '2-digit', minute: '2-digit'
+});
+document.getElementById('dublin-time').textContent = '🕐 ' + time;
+}
+updateTime();
+setInterval(updateTime, 1000);
 
-  <div id="vid-modal">
-    <video id="modal-video" playsinline loop></video>
-    <div class="modal-overlay"></div>
-    <button class="modal-close" onclick="closeModal()">✕</button>
-    <div class="modal-info">
-      <div class="modal-type" id="modal-type"></div>
-      <div class="modal-title" id="modal-title"></div>
-    </div>
-  </div>
+function startVideo() {
+document.getElementById('bg-video').play();
+document.getElementById('play-screen').style.display = 'none';
+}
 
-  <nav id="tabbar">
-    <button class="tab active" onclick="switchPage('home',this)">
-      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-      <span>Home</span>
-    </button>
-    <button class="tab" onclick="switchPage('about',this)">
-      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-      <span>About</span>
-    </button>
-    <button class="tab" onclick="switchPage('favs',this)">
-      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-      <span>Favs</span>
-    </button>
-    <button class="tab" onclick="switchPage('photos',this)">
-      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
-      <span>Photos</span>
-    </button>
-  </nav>
+function openModal(src, type, title) {
+const modal = document.getElementById('vid-modal');
+const vid = document.getElementById('modal-video');
+const bgVid = document.getElementById('bg-video');
+document.getElementById('modal-type').textContent = type;
+document.getElementById('modal-title').textContent = title;
+vid.src = src;
+vid.play();
+bgVid.pause();
+modal.classList.add('open');
+}
 
-  <script>
-    const photoPlayer = new Audio();
-    let activePhotoIndex = -1;
+function closeModal() {
+const modal = document.getElementById('vid-modal');
+const vid = document.getElementById('modal-video');
+const bgVid = document.getElementById('bg-video');
+modal.classList.remove('open');
+vid.pause();
+vid.src = '';
+bgVid.play();
+}
 
-    function playPhoto(index, src, title) {
-      const bgVid = document.getElementById('bg-video');
-      const allItems = document.querySelectorAll('.photo-item');
-
-      if (activePhotoIndex === index && !photoPlayer.paused) {
-        photoPlayer.pause();
-        allItems[index].classList.remove('playing');
-        activePhotoIndex = -1;
-        bgVid.play();
-        return;
-      }
-
-      photoPlayer.pause();
-      allItems.forEach(i => i.classList.remove('playing'));
-      bgVid.pause();
-
-      photoPlayer.src = src;
-      photoPlayer.play();
-      allItems[index].classList.add('playing');
-      activePhotoIndex = index;
-    }
-
-    function switchPage(id, btn) {
-      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-      document.getElementById('page-' + id).classList.add('active');
-      btn.classList.add('active');
-      if (id !== 'photos') {
-        photoPlayer.pause();
-        document.querySelectorAll('.photo-item').forEach(i => i.classList.remove('playing'));
-        activePhotoIndex = -1;
-        if (id !== 'favs') document.getElementById('bg-video').play();
-      }
-    }
-
-    function updateTime() {
-      const time = new Date().toLocaleTimeString('en-IE', {
-        timeZone: 'Europe/Dublin', hour: '2-digit', minute: '2-digit'
-      });
-      document.getElementById('dublin-time').textContent = '🕐 ' + time;
-    }
-    updateTime();
-    setInterval(updateTime, 1000);
-
-    function startVideo() {
-      document.getElementById('bg-video').play();
-      document.getElementById('play-screen').style.display = 'none';
-    }
-
-    function openModal(src, type, title) {
-      const modal = document.getElementById('vid-modal');
-      const vid = document.getElementById('modal-video');
-      const bgVid = document.getElementById('bg-video');
-      document.getElementById('modal-type').textContent = type;
-      document.getElementById('modal-title').textContent = title;
-      vid.src = src;
-      vid.play();
-      bgVid.pause();
-      modal.classList.add('open');
-    }
-
-    function closeModal() {
-      const modal = document.getElementById('vid-modal');
-      const vid = document.getElementById('modal-video');
-      const bgVid = document.getElementById('bg-video');
-      modal.classList.remove('open');
-      vid.pause();
-      vid.src = '';
-      bgVid.play();
-    }
-
-    const canvas = document.getElementById('particles');
-    const pCtx = canvas.getContext('2d');
-    let W, H;
-    const particles = [];
-    function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
-    window.addEventListener('resize', resize);
-    resize();
-    for (let i = 0; i < 60; i++) {
-      particles.push({
-        x: Math.random()*W, y: Math.random()*H,
-        r: Math.random()*1.2+0.3,
-        vx: (Math.random()-0.5)*0.3, vy: (Math.random()-0.5)*0.3,
-        a: Math.random()*0.25+0.05
-      });
-    }
-    function drawParticles() {
-      pCtx.clearRect(0, 0, W, H);
-      particles.forEach(p => {
-        pCtx.beginPath(); pCtx.arc(p.x, p.y, p.r, 0, Math.PI*2);
-        pCtx.fillStyle = `rgba(255,255,255,${p.a})`; pCtx.fill();
-        p.x += p.vx; p.y += p.vy;
-        if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
-        if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
-      });
-      requestAnimationFrame(drawParticles);
-    }
-    drawParticles();
-  </script>
-  <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "383f145147e8407da8390084d079b568"}'></script>
+const canvas = document.getElementById('particles');
+const pCtx = canvas.getContext('2d');
+let W, H;
+const particles = [];
+function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+window.addEventListener('resize', resize);
+resize();
+for (let i = 0; i < 60; i++) {
+particles.push({
+x: Math.random()*W, y: Math.random()*H,
+r: Math.random()*1.2+0.3,
+vx: (Math.random()-0.5)*0.3, vy: (Math.random()-0.5)*0.3,
+a: Math.random()*0.25+0.05
+});
+}
+function drawParticles() {
+pCtx.clearRect(0, 0, W, H);
+particles.forEach(p => {
+pCtx.beginPath(); pCtx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+pCtx.fillStyle = `rgba(255,255,255,${p.a})`; pCtx.fill();
+p.x += p.vx; p.y += p.vy;
+if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
+if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
+});
+requestAnimationFrame(drawParticles);
+}
+drawParticles();
+</script>
+<!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "383f145147e8407da8390084d079b568"}'></script><!-- End Cloudflare Web Analytics -->
 </body>
 </html>
