@@ -200,6 +200,15 @@ canvas#particles { position: fixed; inset: 0; z-index: 3; pointer-events: none; 
 }
 @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0.2;} }
 
+.discord-presence { margin: 0 0 16px; display: none; }
+.dp-label { font-size:8px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:rgba(255,255,255,0.2); margin-bottom:6px; text-align:left; }
+.dp-bar { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:12px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07); }
+.dp-album { width:36px; height:36px; border-radius:6px; object-fit:cover; flex-shrink:0; background:rgba(255,255,255,0.06); display:flex; align-items:center; justify-content:center; font-size:16px; }
+.dp-track-info { flex:1; min-width:0; text-align:left; }
+.dp-track-name { font-size:12px; font-weight:600; color:rgba(255,255,255,0.85); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.dp-track-artist { font-size:10px; color:rgba(255,255,255,0.36); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:2px; }
+.dp-spotify-icon { width:15px; height:15px; flex-shrink:0; fill:#1DB954; opacity:0.75; }
+
 .about-header { display:flex; align-items:center; gap:14px; margin-bottom:24px; }
 .about-name { font-size:17px; font-weight:700; color:#fff; margin-bottom:2px; }
 .about-location { font-size:11px; color:rgba(255,255,255,0.28); letter-spacing:0.5px; }
@@ -212,6 +221,12 @@ canvas#particles { position: fixed; inset: 0; z-index: 3; pointer-events: none; 
   font-size:13px; color:rgba(255,255,255,0.26); font-style:italic; letter-spacing:0.3px; line-height:1.7;
   border-left:2px solid rgba(255,255,255,0.1); padding-left:12px; margin-top:22px;
 }
+.gf-label { font-size:13px; font-weight:700; color:#fff; letter-spacing:0.2px; margin-bottom:10px; display:flex; align-items:center; gap:6px; }
+.gf-label span { font-size:10px; color:rgba(212,168,80,0.7); font-weight:500; letter-spacing:1px; }
+.gf-photo-wrap { position:relative; border-radius:14px; overflow:hidden; border:1px solid rgba(212,168,80,0.35); margin-top:0; box-shadow:0 4px 20px rgba(0,0,0,0.4), 0 0 0 1px rgba(212,168,80,0.1); }
+.gf-photo { width:100%; display:block; object-fit:cover; max-height:220px; filter:brightness(0.95); transition:filter 0.3s ease; }
+.gf-photo-wrap:hover .gf-photo { filter:brightness(1.05) saturate(1.08); }
+.gf-since { position:absolute; bottom:0; left:0; right:0; padding:28px 14px 12px; background:linear-gradient(to top,rgba(0,0,0,0.65) 0%,transparent 100%); font-size:12px; font-weight:600; color:rgba(255,255,255,0.9); letter-spacing:1.5px; text-align:right; }
 
 .section-label { font-size:9px; font-weight:700; color:rgba(255,255,255,0.22); letter-spacing:2.5px; text-transform:uppercase; display:block; margin-bottom:16px; }
 .fav-item {
@@ -233,20 +248,6 @@ canvas#particles { position: fixed; inset: 0; z-index: 3; pointer-events: none; 
 .fav-play { width:28px; height:28px; border-radius:50%; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.16); display:flex; align-items:center; justify-content:center; transition:background 0.2s; }
 .fav-item:hover .fav-play { background:rgba(255,255,255,0.22); }
 
-.photo-section-label { font-size:10px; font-weight:700; color:rgba(255,255,255,0.2); letter-spacing:2px; text-transform:uppercase; display:flex; align-items:center; gap:6px; margin-bottom:10px; margin-top:18px; }
-.photo-section-label:first-of-type { margin-top:0; }
-.photo-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:4px; }
-.photo-item { border-radius:12px; overflow:hidden; aspect-ratio:3/4; background:rgba(255,255,255,0.03); border:1px solid rgba(212,168,80,0.14); transition:all 0.25s ease; position:relative; }
-.photo-item img { width:100%; height:100%; object-fit:cover; filter:brightness(0.9); transition:filter 0.3s ease, transform 0.3s ease; display:block; }
-.photo-item:hover img { filter:brightness(1.05) saturate(1.1); transform:scale(1.04); }
-.photo-item:hover { border-color:rgba(212,168,80,0.4); box-shadow:0 6px 22px rgba(0,0,0,0.45); }
-
-#photo-lightbox { position:fixed; inset:0; z-index:200; background:rgba(0,0,0,0.92); backdrop-filter:blur(20px); display:none; align-items:center; justify-content:center; }
-#photo-lightbox.open { display:flex; }
-#lightbox-img { max-width:90vw; max-height:85vh; border-radius:16px; object-fit:contain; box-shadow:0 24px 80px rgba(0,0,0,0.9); animation:lbIn 0.3s cubic-bezier(0.34,1.56,0.64,1); }
-@keyframes lbIn { from{opacity:0;transform:scale(0.9);} to{opacity:1;transform:scale(1);} }
-.lightbox-close { position:absolute; top:20px; right:20px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.2); color:#fff; font-size:18px; width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; transition:background 0.2s; font-family:'Inter',sans-serif; }
-.lightbox-close:hover { background:rgba(255,255,255,0.18); }
 
 #vid-modal { position:fixed; inset:0; z-index:200; background:#000; display:none; flex-direction:column; align-items:center; justify-content:center; }
 #vid-modal.open { display:flex; }
@@ -446,12 +447,13 @@ canvas#particles { position: fixed; inset: 0; z-index: 3; pointer-events: none; 
   <div class="page active" id="page-home">
     <div class="card card-animate">
       <div class="avatar-wrap">
-        <img class="avatar" src="avatar.jpg" alt="avatar"/>
+        <img class="avatar" src="avatar.gif" alt="avatar"/>
         <div class="avatar-ring"></div>
         <div class="avatar-pulse"></div>
       </div>
       <div class="username"><span class="status-dot"></span><span id="type-name">nixan</span></div>
       <p class="bio">11.04 &lt;3</p>
+      <div id="discord-presence" class="discord-presence"></div>
       <div class="divider"></div>
       <div class="links">
         <a href="https://www.roblox.com/users/84376389/profile" target="_blank" rel="noopener noreferrer" class="link-btn">
@@ -476,9 +478,9 @@ canvas#particles { position: fixed; inset: 0; z-index: 3; pointer-events: none; 
   </div>
 
   <div class="page" id="page-about">
-    <div class="card card-animate" style="padding:32px 28px; text-align:left;">
+    <div class="card card-animate" style="padding:32px 28px; text-align:left; max-height:calc(100vh - 110px); overflow-y:auto;">
       <div class="about-header">
-        <img class="avatar" src="avatar.jpg" alt="avatar"/>
+        <img class="avatar" src="avatar.gif" alt="avatar"/>
         <div>
           <div class="about-name">nixan</div>
           <div class="about-location">📍 Dublin, Ireland</div>
@@ -494,6 +496,14 @@ canvas#particles { position: fixed; inset: 0; z-index: 3; pointer-events: none; 
         </div>
       </div>
       <p class="about-quote">"As long as I am alive, I have infinite chances"</p>
+      <div class="divider" style="margin-top:22px;"></div>
+      <div style="margin-top:18px;">
+        <div class="gf-label">nes <span>♡ since 11.04</span></div>
+        <div class="gf-photo-wrap">
+          <img class="gf-photo" src="hand.jpg" alt=""/>
+          <div class="gf-since">11.04 ♡</div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -521,25 +531,6 @@ canvas#particles { position: fixed; inset: 0; z-index: 3; pointer-events: none; 
     </div>
   </div>
 
-  <div class="page" id="page-photos">
-    <div class="card card-animate" style="padding:28px 22px; max-height:calc(100vh - 110px); overflow-y:auto;">
-      <div class="photo-section-label">❤️</div>
-      <div class="photo-grid">
-        <div class="photo-item" onclick="openLightbox('photo1.jpg')"><img src="photo1.jpg" alt="photo 1"/></div>
-        <div class="photo-item" onclick="openLightbox('photo2.jpg')"><img src="photo2.jpg" alt="photo 2"/></div>
-        <div class="photo-item" onclick="openLightbox('photo3.jpg')"><img src="photo3.jpg" alt="photo 3"/></div>
-        <div class="photo-item" onclick="openLightbox('photo4.jpg')"><img src="photo4.jpg" alt="photo 4"/></div>
-      </div>
-      <div class="photo-section-label" style="margin-top:18px;">📍</div>
-      <div class="photo-grid">
-        <div class="photo-item" onclick="openLightbox('place1.jpg')"><img src="place1.jpg" alt="place 1"/></div>
-        <div class="photo-item" onclick="openLightbox('place2.jpg')"><img src="place2.jpg" alt="place 2"/></div>
-        <div class="photo-item" onclick="openLightbox('place3.jpg')"><img src="place3.jpg" alt="place 3"/></div>
-        <div class="photo-item" onclick="openLightbox('place4.jpg')"><img src="place4.jpg" alt="place 4"/></div>
-      </div>
-    </div>
-  </div>
-
   <div class="page" id="page-comments">
     <div class="card card-animate" style="padding:28px 22px; max-height:calc(100vh - 110px); overflow-y:auto; text-align:left;">
       <span class="section-label">Comments</span>
@@ -558,11 +549,6 @@ canvas#particles { position: fixed; inset: 0; z-index: 3; pointer-events: none; 
       </div>
     </div>
   </div>
-</div>
-
-<div id="photo-lightbox" onclick="closeLightbox()">
-  <img id="lightbox-img" src="" alt=""/>
-  <button class="lightbox-close" onclick="closeLightbox()">✕</button>
 </div>
 
 <div id="vid-modal">
@@ -585,16 +571,13 @@ canvas#particles { position: fixed; inset: 0; z-index: 3; pointer-events: none; 
   <button class="tab" onclick="switchPage('favs',this)">
     <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
   </button>
-  <button class="tab" onclick="switchPage('photos',this)">
-    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
-  </button>
   <button class="tab" onclick="switchPage('comments',this)">
     <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
   </button>
 </nav>
 
 <script>
-const tabOrder = ['home','about','favs','photos','comments'];
+const tabOrder = ['home','about','favs','comments'];
 let lastTab = 0;
 const COMMENTS_API = 'https://green-dew-ca87.jacobhatesfifa16.workers.dev/comments';
 
@@ -664,15 +647,6 @@ function closeModal() {
   vid.src = '';
   document.getElementById('bg-video').play().catch(() => {});
 }
-function openLightbox(src) {
-  document.getElementById('lightbox-img').src = src;
-  document.getElementById('photo-lightbox').classList.add('open');
-}
-function closeLightbox() {
-  document.getElementById('photo-lightbox').classList.remove('open');
-  document.getElementById('lightbox-img').src = '';
-}
-
 function escapeHtml(str) {
   return String(str).replace(/[&<>'"]/g, m => ({
     '&': '&amp;',
@@ -928,6 +902,76 @@ nameTarget.textContent = '';
 setTimeout(typeName, 600);
 
 loadComments();
+
+const DISCORD_ID = '1409299131096240262';
+const STATUS_COLORS = {
+  online:  { bg: '#43b581', shadow: 'rgba(67,181,129,0.9)',  anim: '' },
+  idle:    { bg: '#faa61a', shadow: 'rgba(250,166,26,0.9)',  anim: '' },
+  dnd:     { bg: '#f04747', shadow: 'rgba(240,71,71,0.9)',   anim: 'none' },
+  offline: { bg: '#747f8d', shadow: 'rgba(116,127,141,0.4)', anim: 'none' }
+};
+
+function updatePresence(data) {
+  const dot = document.querySelector('.status-dot');
+  const presence = document.getElementById('discord-presence');
+  const col = STATUS_COLORS[data.discord_status] || STATUS_COLORS.offline;
+  dot.style.background = col.bg;
+  dot.style.boxShadow = `0 0 8px ${col.shadow}`;
+  dot.style.animation = col.anim;
+
+  if (data.listening_to_spotify && data.spotify) {
+    const sp = data.spotify;
+    presence.innerHTML = `<div class="dp-label">Listening to Spotify</div>
+      <div class="dp-bar">
+        <img class="dp-album" src="${sp.album_art_url}" alt=""/>
+        <div class="dp-track-info">
+          <div class="dp-track-name">${escapeHtml(sp.song)}</div>
+          <div class="dp-track-artist">${escapeHtml(sp.artist)}</div>
+        </div>
+        <svg class="dp-spotify-icon" viewBox="0 0 24 24"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+      </div>`;
+    presence.style.display = 'block';
+    return;
+  }
+
+  const activity = data.activities && data.activities.find(a => a.type === 0);
+  if (activity) {
+    const largeImg = activity.assets && activity.assets.large_image
+      ? `https://cdn.discordapp.com/app-assets/${activity.application_id}/${activity.assets.large_image}.png`
+      : null;
+    const detail = escapeHtml(activity.details || activity.state || '');
+    presence.innerHTML = `<div class="dp-label">Playing</div>
+      <div class="dp-bar">
+        ${largeImg
+          ? `<img class="dp-album" src="${largeImg}" alt=""/>`
+          : `<div class="dp-album">🎮</div>`}
+        <div class="dp-track-info">
+          <div class="dp-track-name">${escapeHtml(activity.name)}</div>
+          ${detail ? `<div class="dp-track-artist">${detail}</div>` : ''}
+        </div>
+      </div>`;
+    presence.style.display = 'block';
+    return;
+  }
+
+  presence.style.display = 'none';
+}
+
+function initLanyard() {
+  const ws = new WebSocket('wss://api.lanyard.rest/socket');
+  let hb;
+  ws.onmessage = e => {
+    const { op, d } = JSON.parse(e.data);
+    if (op === 1) {
+      hb = setInterval(() => ws.readyState === 1 && ws.send(JSON.stringify({ op: 3 })), d.heartbeat_interval);
+      ws.send(JSON.stringify({ op: 2, d: { subscribe_to_id: DISCORD_ID } }));
+    }
+    if (op === 0) updatePresence(d);
+  };
+  ws.onclose = () => { clearInterval(hb); setTimeout(initLanyard, 5000); };
+  ws.onerror = () => ws.close();
+}
+initLanyard();
 </script>
 <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "383f145147e8407da8390084d079b568"}'></script>
 </body>
