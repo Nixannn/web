@@ -135,6 +135,8 @@ canvas#particles { position: fixed; inset: 0; z-index: 3; pointer-events: none; 
 .card-animate.entered > *:nth-child(5) { opacity:1; transform:none; transition-delay:0.28s; }
 .card-animate.entered > *:nth-child(6) { opacity:1; transform:none; transition-delay:0.34s; }
 .card-animate.entered > *:nth-child(7) { opacity:1; transform:none; transition-delay:0.40s; }
+.card-animate.entered > *:nth-child(8) { opacity:1; transform:none; transition-delay:0.46s; }
+.card-animate.entered > *:nth-child(9) { opacity:1; transform:none; transition-delay:0.52s; }
 
 .divider { height:1px; background:linear-gradient(90deg,transparent,rgba(212,168,80,0.28),transparent); }
 
@@ -273,6 +275,122 @@ canvas#particles { position: fixed; inset: 0; z-index: 3; pointer-events: none; 
 .tab.active { color:#D4A850; }
 .tab.active::after { width:24px; }
 .tab svg { width:20px; height:20px; }
+
+.comment-form {
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  margin-bottom:16px;
+}
+.comment-input, .comment-textarea {
+  width:100%;
+  border:none;
+  outline:none;
+  border-radius:12px;
+  background:rgba(255,255,255,0.045);
+  border:1px solid rgba(212,168,80,0.18);
+  color:#fff;
+  font-family:'Inter', sans-serif;
+  font-size:13px;
+  padding:12px 14px;
+}
+.comment-input::placeholder, .comment-textarea::placeholder { color:rgba(255,255,255,0.26); }
+.comment-textarea {
+  min-height:92px;
+  resize:none;
+  line-height:1.55;
+}
+.comment-form-row {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+.comment-hint {
+  font-size:10px;
+  color:rgba(255,255,255,0.22);
+  letter-spacing:0.6px;
+  text-transform:uppercase;
+}
+.comment-submit {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  border:none;
+  border-radius:12px;
+  padding:11px 16px;
+  background:rgba(212,168,80,0.12);
+  border:1px solid rgba(212,168,80,0.28);
+  color:#D4A850;
+  font-size:12px;
+  font-weight:600;
+  letter-spacing:0.4px;
+  font-family:'Inter', sans-serif;
+  transition:all 0.22s ease;
+}
+.comment-submit:hover {
+  transform:translateY(-1px);
+  background:rgba(212,168,80,0.18);
+  border-color:rgba(212,168,80,0.45);
+  color:#fff;
+}
+.comment-submit:disabled {
+  opacity:0.55;
+  cursor:not-allowed;
+  transform:none;
+}
+.comment-status {
+  min-height:16px;
+  font-size:11px;
+  color:rgba(255,255,255,0.34);
+  margin:10px 0 12px;
+}
+.comments-list {
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.comment-item {
+  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(212,168,80,0.14);
+  border-radius:14px;
+  padding:12px 14px;
+}
+.comment-top {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:8px;
+}
+.comment-name {
+  font-size:12px;
+  font-weight:700;
+  color:#fff;
+  letter-spacing:0.2px;
+}
+.comment-date {
+  font-size:10px;
+  color:rgba(255,255,255,0.24);
+  white-space:nowrap;
+}
+.comment-message {
+  font-size:12px;
+  color:rgba(255,255,255,0.6);
+  line-height:1.65;
+  white-space:pre-wrap;
+  word-break:break-word;
+}
+.comments-empty {
+  padding:18px 14px;
+  border-radius:14px;
+  border:1px dashed rgba(212,168,80,0.16);
+  background:rgba(255,255,255,0.02);
+  text-align:center;
+  color:rgba(255,255,255,0.28);
+  font-size:12px;
+}
 </style>
 </head>
 <body>
@@ -328,12 +446,12 @@ canvas#particles { position: fixed; inset: 0; z-index: 3; pointer-events: none; 
   <div class="page active" id="page-home">
     <div class="card card-animate">
       <div class="avatar-wrap">
-        <img class="avatar" src="avatar.jpg" alt="avatar"/>
+        <img class="avatar" src="avatar.gif" alt="avatar"/>
         <div class="avatar-ring"></div>
         <div class="avatar-pulse"></div>
       </div>
       <div class="username"><span class="status-dot"></span><span id="type-name">nixan</span></div>
-      <p class="bio">11.04 <3</p>
+      <p class="bio">11.04 &lt;3</p>
       <div class="divider"></div>
       <div class="links">
         <a href="https://www.roblox.com/users/84376389/profile" target="_blank" rel="noopener noreferrer" class="link-btn">
@@ -360,7 +478,7 @@ canvas#particles { position: fixed; inset: 0; z-index: 3; pointer-events: none; 
   <div class="page" id="page-about">
     <div class="card card-animate" style="padding:32px 28px; text-align:left;">
       <div class="about-header">
-        <img class="avatar" src="avatar.jpg" alt="avatar"/>
+        <img class="avatar" src="avatar.gif" alt="avatar"/>
         <div>
           <div class="about-name">nixan</div>
           <div class="about-location">📍 Dublin, Ireland</div>
@@ -421,6 +539,25 @@ canvas#particles { position: fixed; inset: 0; z-index: 3; pointer-events: none; 
       </div>
     </div>
   </div>
+
+  <div class="page" id="page-comments">
+    <div class="card card-animate" style="padding:28px 22px; max-height:calc(100vh - 110px); overflow-y:auto; text-align:left;">
+      <span class="section-label">Comments</span>
+      <div class="comment-form">
+        <input id="comment-name" class="comment-input" maxlength="32" placeholder="your name (optional)" />
+        <textarea id="comment-message" class="comment-textarea" maxlength="280" placeholder="leave a comment..."></textarea>
+        <div class="comment-form-row">
+          <span class="comment-hint">No login needed</span>
+          <button id="comment-submit" class="comment-submit" onclick="submitComment()">Post</button>
+        </div>
+      </div>
+      <div id="comment-status" class="comment-status"></div>
+      <div class="divider" style="margin-bottom:14px;"></div>
+      <div id="comments-list" class="comments-list">
+        <div class="comments-empty">Loading comments...</div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div id="photo-lightbox" onclick="closeLightbox()">
@@ -451,11 +588,15 @@ canvas#particles { position: fixed; inset: 0; z-index: 3; pointer-events: none; 
   <button class="tab" onclick="switchPage('photos',this)">
     <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
   </button>
+  <button class="tab" onclick="switchPage('comments',this)">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+  </button>
 </nav>
 
 <script>
-const tabOrder = ['home','about','favs','photos'];
+const tabOrder = ['home','about','favs','photos','comments'];
 let lastTab = 0;
+const COMMENTS_API = 'https://green-dew-ca87.jacobhatesfifa16.workers.dev/comments';
 
 function switchPage(id, btn) {
   const newIndex = tabOrder.indexOf(id);
@@ -530,6 +671,101 @@ function openLightbox(src) {
 function closeLightbox() {
   document.getElementById('photo-lightbox').classList.remove('open');
   document.getElementById('lightbox-img').src = '';
+}
+
+function escapeHtml(str) {
+  return String(str).replace(/[&<>'"]/g, m => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  }[m]));
+}
+
+function formatCommentDate(ts) {
+  try {
+    return new Date(ts).toLocaleString('en-IE', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  } catch {
+    return '';
+  }
+}
+
+function renderComments(comments) {
+  const list = document.getElementById('comments-list');
+  if (!comments || !comments.length) {
+    list.innerHTML = '<div class="comments-empty">No comments yet. Be the first one.</div>';
+    return;
+  }
+
+  list.innerHTML = comments.map(comment => `
+    <div class="comment-item">
+      <div class="comment-top">
+        <div class="comment-name">${escapeHtml(comment.name || 'anonymous')}</div>
+        <div class="comment-date">${escapeHtml(formatCommentDate(comment.timestamp))}</div>
+      </div>
+      <div class="comment-message">${escapeHtml(comment.message || '')}</div>
+    </div>
+  `).join('');
+}
+
+async function loadComments() {
+  const status = document.getElementById('comment-status');
+  try {
+    const res = await fetch(COMMENTS_API);
+    const data = await res.json();
+    renderComments(Array.isArray(data) ? data : []);
+    status.textContent = '';
+  } catch (e) {
+    document.getElementById('comments-list').innerHTML = '<div class="comments-empty">Could not load comments right now.</div>';
+    status.textContent = 'Comments are temporarily unavailable.';
+  }
+}
+
+async function submitComment() {
+  const nameEl = document.getElementById('comment-name');
+  const msgEl = document.getElementById('comment-message');
+  const btn = document.getElementById('comment-submit');
+  const status = document.getElementById('comment-status');
+
+  const name = nameEl.value.trim();
+  const message = msgEl.value.trim();
+
+  if (!message) {
+    status.textContent = 'Write something first.';
+    return;
+  }
+
+  btn.disabled = true;
+  status.textContent = 'Posting...';
+
+  try {
+    const res = await fetch(COMMENTS_API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, message })
+    });
+
+    if (!res.ok) throw new Error('Failed');
+
+    nameEl.value = '';
+    msgEl.value = '';
+    status.textContent = 'Comment posted.';
+    await loadComments();
+    setTimeout(() => {
+      if (status.textContent === 'Comment posted.') status.textContent = '';
+    }, 1800);
+  } catch (e) {
+    status.textContent = 'Could not post comment.';
+  } finally {
+    btn.disabled = false;
+  }
 }
 
 const canvas = document.getElementById('particles');
@@ -690,6 +926,8 @@ function typeName() {
 }
 nameTarget.textContent = '';
 setTimeout(typeName, 600);
+
+loadComments();
 </script>
 <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "383f145147e8407da8390084d079b568"}'></script>
 </body>
