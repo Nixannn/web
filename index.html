@@ -4,12 +4,13 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>nixan</title>
-<link rel="icon" type="image/png" href="logo.png">
+<link rel="icon" type="image/png" href="logo.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="preload" as="image" href="avatar.gif">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; cursor: none !important; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20' shape-rendering='crispEdges'%3E%3Cg fill='%23000'%3E%3Crect x='8' y='0' width='4' height='7'/%3E%3Crect x='8' y='13' width='4' height='7'/%3E%3Crect x='0' y='8' width='7' height='4'/%3E%3Crect x='13' y='8' width='7' height='4'/%3E%3C/g%3E%3Cg fill='%23D4A850'%3E%3Crect x='9' y='1' width='2' height='5'/%3E%3Crect x='9' y='14' width='2' height='5'/%3E%3Crect x='1' y='9' width='5' height='2'/%3E%3Crect x='14' y='9' width='5' height='2'/%3E%3C/g%3E%3C/svg%3E") 10 10, crosshair !important; }
 html, body { width: 100%; height: 100%; }
 body { font-family: 'Inter', sans-serif; min-height: 100vh; overflow: hidden; background: #000; }
 
@@ -55,17 +56,6 @@ body { font-family: 'Inter', sans-serif; min-height: 100vh; overflow: hidden; ba
 
 canvas#particles { position: fixed; inset: 0; z-index: 3; pointer-events: none; }
 
-#cursor-dot {
-  position: fixed;
-  width: 9px; height: 9px;
-  background: rgba(212,168,80,0.95); border-radius: 50%;
-  pointer-events: none; z-index: 9999;
-  box-shadow: 0 0 10px rgba(212,168,80,0.75), 0 0 22px rgba(212,168,80,0.35);
-  will-change: transform, opacity;
-  opacity: 0;
-  left: 0;
-  top: 0;
-}
 
 #play-screen {
   position: fixed; inset: 0; z-index: 100; background: #000;
@@ -396,8 +386,6 @@ canvas#particles { position: fixed; inset: 0; z-index: 3; pointer-events: none; 
 </head>
 <body>
 
-<div id="cursor-dot"></div>
-
 <svg id="sun-watermark" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
   <circle cx="50" cy="50" r="18" fill="#D4A850"/>
   <g stroke="#D4A850" stroke-width="3" stroke-linecap="round">
@@ -426,7 +414,7 @@ canvas#particles { position: fixed; inset: 0; z-index: 3; pointer-events: none; 
   <p>click to enter</p>
 </div>
 
-<video id="bg-video" loop playsinline>
+<video id="bg-video" loop playsinline preload="metadata">
   <source src="luffy.mp4" type="video/mp4">
 </video>
 <div class="video-overlay"></div>
@@ -447,7 +435,7 @@ canvas#particles { position: fixed; inset: 0; z-index: 3; pointer-events: none; 
   <div class="page active" id="page-home">
     <div class="card card-animate">
       <div class="avatar-wrap">
-        <img class="avatar" src="avatar.jpg" alt="avatar"/>
+        <img class="avatar" src="avatar.gif" alt="avatar"/>
         <div class="avatar-ring"></div>
         <div class="avatar-pulse"></div>
       </div>
@@ -480,7 +468,7 @@ canvas#particles { position: fixed; inset: 0; z-index: 3; pointer-events: none; 
   <div class="page" id="page-about">
     <div class="card card-animate" style="padding:32px 28px; text-align:left; max-height:calc(100vh - 110px); overflow-y:auto;">
       <div class="about-header">
-        <img class="avatar" src="avatar.jpg" alt="avatar"/>
+        <img class="avatar" src="avatar.gif" alt="avatar" loading="lazy" decoding="async"/>
         <div>
           <div class="about-name">nixan</div>
           <div class="about-location">📍 Dublin, Ireland</div>
@@ -500,7 +488,7 @@ canvas#particles { position: fixed; inset: 0; z-index: 3; pointer-events: none; 
       <div style="margin-top:18px;">
         <div class="gf-label">nes <span>♡ since 11.04</span></div>
         <div class="gf-photo-wrap">
-          <img class="gf-photo" src="hand.jpg" alt=""/>
+          <img class="gf-photo" src="hand.jpg" alt="" loading="lazy" decoding="async"/>
           <div class="gf-since">11.04 ♡</div>
         </div>
       </div>
@@ -511,19 +499,19 @@ canvas#particles { position: fixed; inset: 0; z-index: 3; pointer-events: none; 
     <div class="card card-animate" style="padding:28px 22px;">
       <span class="section-label">Favourites</span>
       <div class="fav-item" onclick="openModal('movie-edit.mp4','Film','A Bronx Tale')">
-        <img class="fav-poster" src="movie.jpg" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"/>
+        <img class="fav-poster" src="movie.jpg" loading="lazy" decoding="async" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"/>
         <div class="fav-poster-placeholder" style="display:none;">🎬</div>
         <div class="fav-info"><div class="fav-type">Film</div><div class="fav-title">A Bronx Tale</div><div class="fav-sub">1993 · Crime Drama</div></div>
         <div class="fav-right"><span class="fav-stars">★★★★★</span><div class="fav-play"><svg width="10" height="10" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg></div></div>
       </div>
       <div class="fav-item" onclick="openModal('game-edit.mp4','Game','Mafia: Definitive Edition')">
-        <img class="fav-poster" src="game.jpg" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"/>
+        <img class="fav-poster" src="game.jpg" loading="lazy" decoding="async" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"/>
         <div class="fav-poster-placeholder" style="display:none;">🎮</div>
         <div class="fav-info"><div class="fav-type">Game</div><div class="fav-title">Mafia: Definitive Edition</div><div class="fav-sub">PC / Console · Action</div></div>
         <div class="fav-right"><span class="fav-stars">★★★★★</span><div class="fav-play"><svg width="10" height="10" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg></div></div>
       </div>
       <div class="fav-item" onclick="openModal('show-edit.mp4','Show','The Walking Dead')">
-        <img class="fav-poster" src="show.jpg" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"/>
+        <img class="fav-poster" src="show.jpg" loading="lazy" decoding="async" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"/>
         <div class="fav-poster-placeholder" style="display:none;">📺</div>
         <div class="fav-info"><div class="fav-type">Show</div><div class="fav-title">The Walking Dead</div><div class="fav-sub">2010 · Horror Drama</div></div>
         <div class="fav-right"><span class="fav-stars">★★★★★</span><div class="fav-play"><svg width="10" height="10" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg></div></div>
@@ -581,6 +569,7 @@ const tabOrder = ['home','about','favs','comments'];
 let lastTab = 0;
 const COMMENTS_API = 'https://green-dew-ca87.jacobhatesfifa16.workers.dev/comments';
 
+let commentsLoaded = false;
 function switchPage(id, btn) {
   const newIndex = tabOrder.indexOf(id);
   const direction = newIndex > lastTab ? 1 : -1;
@@ -601,6 +590,10 @@ function switchPage(id, btn) {
     if (c) setTimeout(() => c.classList.add('entered'), 80);
   }));
   lastTab = newIndex;
+  if (id === 'comments' && !commentsLoaded) {
+    commentsLoaded = true;
+    loadComments();
+  }
 }
 setTimeout(() => {
   const h = document.querySelector('#page-home .card-animate');
@@ -613,7 +606,7 @@ function updateTime() {
   });
 }
 updateTime();
-setInterval(updateTime, 1000);
+setInterval(updateTime, 30000);
 
 async function fetchViews() {
   try {
@@ -837,42 +830,15 @@ function spawnCloud() {
 for (let i = 0; i < 5; i++) setTimeout(spawnCloud, i * 3000);
 setInterval(spawnCloud, 7000);
 
-let mx = window.innerWidth / 2;
-let my = window.innerHeight / 2;
-let clicking = false;
-const dot = document.getElementById('cursor-dot');
-
-function updateCursorVisibility() {
-  dot.style.opacity = window.matchMedia('(pointer:fine)').matches ? '1' : '0';
-}
-window.addEventListener('mousemove', e => {
-  mx = e.clientX;
-  my = e.clientY;
-  updateCursorVisibility();
-});
-window.addEventListener('mouseenter', updateCursorVisibility);
-window.addEventListener('mouseleave', () => { dot.style.opacity = '0'; });
-document.addEventListener('mousedown', () => { clicking = true; });
-document.addEventListener('mouseup', () => { clicking = false; });
-function moveCursor() {
-  dot.style.transform = `translate(${mx - 4.5}px, ${my - 4.5}px) scale(${clicking ? 1.8 : 1})`;
-  requestAnimationFrame(moveCursor);
-}
-moveCursor();
-
-let tx = 0, ty = 0;
-document.addEventListener('mousemove', e => { tx = e.clientX; ty = e.clientY; });
-function updateTilt() {
+const cards = document.querySelectorAll('.card');
+document.addEventListener('mousemove', e => {
   const cx2 = window.innerWidth / 2;
   const cy2 = window.innerHeight / 2;
-  const rotX = ((ty - cy2) / cy2) * -3.5;
-  const rotY = ((tx - cx2) / cx2) * 3.5;
-  document.querySelectorAll('.card').forEach(c => {
-    c.style.transform = `perspective(1200px) rotateX(${rotX}deg) rotateY(${rotY}deg)`;
-  });
-  requestAnimationFrame(updateTilt);
-}
-updateTilt();
+  const rotX = ((e.clientY - cy2) / cy2) * -3.5;
+  const rotY = ((e.clientX - cx2) / cx2) * 3.5;
+  const t = `perspective(1200px) rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+  cards.forEach(c => { c.style.transform = t; });
+});
 
 let tsX = 0, tsY = 0;
 document.addEventListener('touchstart', e => {
@@ -900,8 +866,6 @@ function typeName() {
 }
 nameTarget.textContent = '';
 setTimeout(typeName, 600);
-
-loadComments();
 
 const DISCORD_ID = '1409299131096240262';
 const STATUS_COLORS = {
