@@ -1029,7 +1029,32 @@ footer span { color: var(--text-3); }
       </div>
     </div>
   </section>
+  <!-- comments -->
+  <section class="card">
+    <div class="card-h">
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
+      </svg>
+      <span>Comments</span>
+    </div>
+    <p class="card-sub">leave something if u want.</p>
 
+    <div class="comments-wrap">
+      <div class="comment-form">
+        <input id="c-name" type="text" maxlength="24" placeholder="name (optional)">
+        <textarea id="c-msg" maxlength="280" placeholder="message"></textarea>
+        <div class="comment-form-row">
+          <div class="comment-note" id="c-status">be nice.</div>
+          <button class="comment-btn" id="c-submit" type="button">Post</button>
+        </div>
+      </div>
+
+      <div id="comments-list" class="comments-list">
+        <div class="comments-empty">loading comments…</div>
+      </div>
+    </div>
+  </section>
+  
   <!-- connect -->
   <section class="card">
     <div class="card-h">
