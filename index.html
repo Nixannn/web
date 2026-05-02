@@ -202,34 +202,6 @@ a { color: inherit; text-decoration: none; }
   margin-right: 4px;
 }
 
-/* ── love card ── */
-.love-card {
-  display: flex; align-items: center; gap: 16px;
-  padding: 16px 18px;
-  background: linear-gradient(90deg, rgba(199,123,123,0.08), rgba(199,123,123,0.02) 60%, var(--card));
-  border: 1px solid rgba(199,123,123,0.18);
-}
-.love-img {
-  width: 64px; height: 64px;
-  border-radius: 12px;
-  object-fit: cover;
-  flex-shrink: 0;
-  border: 1px solid rgba(255,255,255,0.06);
-}
-.love-info { flex: 1; min-width: 0; }
-.love-label {
-  font: 600 9px/1 var(--font);
-  color: var(--rose);
-  letter-spacing: 1.5px; text-transform: uppercase;
-  margin-bottom: 6px;
-  display: inline-flex; align-items: center; gap: 6px;
-}
-.love-label svg { width: 11px; height: 11px; fill: currentColor; }
-.love-date {
-  font: 700 22px/1 var(--font);
-  letter-spacing: -0.4px;
-  color: var(--text);
-}
 
 /* ── roblox card ── */
 .rb-card { padding: 18px; }
@@ -555,15 +527,8 @@ a { color: inherit; text-decoration: none; }
   100% { box-shadow: 0 0 0 1px rgba(199,123,123,0.18), 0 0 0    rgba(199,123,123,0); }
 }
 body.entered .bg-video { animation: bgBeat var(--bpm) ease-out infinite; }
-body.entered .love-label svg {
-  animation: heartBeat var(--bpm) ease-out infinite;
-  transform-origin: center;
-}
-body.entered .love-card { animation: glowBeat var(--bpm) ease-out infinite; }
 @media (prefers-reduced-motion: reduce) {
-  body.entered .bg-video,
-  body.entered .love-label svg,
-  body.entered .love-card { animation: none; }
+  body.entered .bg-video { animation: none; }
 }
 
 /* ── stitch cursor (replaces system cursor) ── */
@@ -948,17 +913,6 @@ footer span { color: var(--text-3); }
     </section>
   </div>
 
-  <!-- love -->
-  <section class="card love-card">
-    <img class="love-img" src="hand.jpg" alt="">
-    <div class="love-info">
-      <div class="love-label">
-        <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-        Mine
-      </div>
-      <div class="love-date"></div>
-    </div>
-  </section>
 
   <!-- live + recent activity row -->
   <div class="activity-grid">
@@ -1467,6 +1421,7 @@ function stopPreview() {
     setTileIcon(rpCurrent, false);
     rpCurrent = null;
   }
+  if (!musicActive && !videoModalOpen) setBgAudio(false);
 }
 function setTileIcon(tile, playing) {
   const btn = tile.querySelector('.rp-play');
@@ -1485,6 +1440,7 @@ function togglePreview(tile) {
   setTileIcon(tile, true);
   rpAudio.src = url;
   rpAudio.play().catch(() => stopPreview());
+  setBgAudio(true);
 }
 
 function renderRecentlyPlayed(tracks) {
